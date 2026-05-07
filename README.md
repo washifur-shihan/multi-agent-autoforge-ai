@@ -1,6 +1,6 @@
-# Kenneth AI Engine - API Documentation
+# Autoforge AI Engine - API Documentation
 
-Welcome to the **Kenneth AI Engine**. This project serves as an intelligent backend system capable of analyzing user prompts, planning software architecture, generating code, running automatic tests, performing self-repair on generated code, and returning complete deliverables such as functioning project directories or formatted PDF reports and queries result and so on.
+Welcome to the **Autoforge AI Engine**. This project serves as an intelligent backend system capable of analyzing user prompts, planning software architecture, generating code, running automatic tests, performing self-repair on generated code, and returning complete deliverables such as functioning project directories or formatted PDF reports and queries result and so on.
 
 ## What Has Been Accomplished So Far
 The project has evolved into a robust AI pipeline. Key milestones include:

@@ -24,13 +24,9 @@ class PreviewAgent:
             raise RuntimeError("package.json not found")
 
         try:
-            return json.loads(
-                package_json_path.read_text(encoding="utf-8")
-            )
+            return json.loads(package_json_path.read_text(encoding="utf-8"))
         except Exception as exc:
-            raise RuntimeError(
-                f"Could not read package.json: {exc}"
-            ) from exc
+            raise RuntimeError(f"Could not read package.json: {exc}") from exc
 
     def choose_npm_script(self, package_json):
         scripts = package_json.get("scripts") or {}
@@ -40,11 +36,43 @@ class PreviewAgent:
                 return script_name
 
         available = ", ".join(sorted(scripts.keys())) or "none"
-
         raise RuntimeError(
-            f"No preview script found in package.json. "
-            f"Available scripts: {available}"
+            f"No preview script found in package.json. Available scripts: {available}"
         )
+
+    def find_index_html(self, project_path):
+        project_path = Path(project_path)
+
+        direct_index = project_path / "index.html"
+        if direct_index.exists():
+            return direct_index
+
+        matches = list(project_path.rglob("index.html"))
+        if matches:
+            return matches[0]
+
+        return None
+
+    def find_python_entry(self, project_path):
+        project_path = Path(project_path)
+
+        preferred = [
+            "app.py",
+            "main.py",
+            "server.py",
+            "script.py"
+        ]
+
+        for name in preferred:
+            file_path = project_path / name
+            if file_path.exists():
+                return file_path
+
+        matches = list(project_path.rglob("*.py"))
+        if matches:
+            return matches[0]
+
+        return None
 
     def start_preview(self, project_path):
         try:
@@ -56,48 +84,86 @@ class PreviewAgent:
                     "error": "Project path does not exist"
                 }
 
-            package_json_path = project_path / "package.json"
-
-            if not package_json_path.exists():
-                return {
-                    "success": False,
-                    "error": "package.json not found"
-                }
-
             env = os.environ.copy()
-
-            try:
-                package_json = self.read_package_json(project_path)
-                script_name = self.choose_npm_script(package_json)
-            except RuntimeError as exc:
-                return {
-                    "success": False,
-                    "error": str(exc)
-                }
-
             port = self.get_free_port()
-
             env["PORT"] = str(port)
             env.setdefault("HOST", "127.0.0.1")
 
             npm_cmd = "npm.cmd" if os.name == "nt" else "npm"
 
-            cmd = [
-                npm_cmd,
-                "run",
-                script_name
-            ]
+            package_json_path = project_path / "package.json"
+
+            # 1. Node / React / Vite / Express project
+            if package_json_path.exists():
+                try:
+                    package_json = self.read_package_json(project_path)
+                    script_name = self.choose_npm_script(package_json)
+                except RuntimeError as exc:
+                    return {
+                        "success": False,
+                        "error": str(exc)
+                    }
+
+                cmd = [
+                    npm_cmd,
+                    "run",
+                    script_name
+                ]
+
+                cwd = project_path
+                project_type = "node"
+                script_used = script_name
+
+            else:
+                index_html = self.find_index_html(project_path)
+
+                # 2. Plain HTML/CSS/JS project
+                if index_html:
+                    cwd = index_html.parent
+
+                    cmd = [
+                        "python",
+                        "-m",
+                        "http.server",
+                        str(port),
+                        "--bind",
+                        "127.0.0.1"
+                    ]
+
+                    project_type = "html"
+                    script_used = "python -m http.server"
+
+                else:
+                    python_entry = self.find_python_entry(project_path)
+
+                    # 3. Python project
+                    if python_entry:
+                        cwd = python_entry.parent
+
+                        cmd = [
+                            "python",
+                            str(python_entry)
+                        ]
+
+                        project_type = "python"
+                        script_used = python_entry.name
+
+                    else:
+                        return {
+                            "success": False,
+                            "error": "Unsupported project type. No package.json, index.html, or Python entry file found."
+                        }
 
             process = subprocess.Popen(
                 cmd,
-                cwd=str(project_path),
+                cwd=str(cwd),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
                 env=env
             )
 
-            time.sleep(5)
+            time.sleep(3)
 
             if process.poll() is not None:
                 stdout, stderr = process.communicate()
@@ -106,7 +172,9 @@ class PreviewAgent:
                     "success": False,
                     "error": "Preview server failed to start",
                     "stdout": stdout,
-                    "stderr": stderr
+                    "stderr": stderr,
+                    "project_type": project_type,
+                    "script_used": script_used
                 }
 
             preview_url = f"http://127.0.0.1:{port}"
@@ -114,14 +182,17 @@ class PreviewAgent:
             self.active_processes[str(project_path)] = {
                 "process": process,
                 "port": port,
-                "url": preview_url
+                "url": preview_url,
+                "project_type": project_type,
+                "script_used": script_used
             }
 
             return {
                 "success": True,
                 "url": preview_url,
                 "port": port,
-                "script_used": script_name
+                "project_type": project_type,
+                "script_used": script_used
             }
 
         except Exception as exc:
@@ -188,7 +259,9 @@ class PreviewAgent:
                 "success": True,
                 "status": "running",
                 "url": process_info["url"],
-                "port": process_info["port"]
+                "port": process_info["port"],
+                "project_type": process_info.get("project_type"),
+                "script_used": process_info.get("script_used")
             }
 
         except Exception as exc:

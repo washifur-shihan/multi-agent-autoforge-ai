@@ -18,9 +18,11 @@ class ClaudeClient(BaseProvider):
             "content-type": "application/json"
         }
 
+        # ai_engine/providers/claude_client.py
+
         payload = {
-            "model": "claude-3-sonnet-20240229",
-            "max_tokens": 2000,
+            "model": "claude-sonnet-4-5",
+            "max_tokens": 8000,
             "messages": [
                 {"role": "user", "content": prompt}
             ]

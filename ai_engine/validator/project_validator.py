@@ -28,15 +28,14 @@ class ProjectValidator:
 
 
     def detect_project_type(self):
-
         if self._exists("package.json"):
             return "node"
 
+        if self._exists("index.html") or self._exists("src/index.html"):
+            return "static"
+
         if self._exists("requirements.txt"):
             return "python"
-
-        if self._exists("index.html"):
-            return "static"
 
         return "unknown"
 

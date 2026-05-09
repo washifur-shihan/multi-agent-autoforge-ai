@@ -22,7 +22,7 @@ class ClaudeClient(BaseProvider):
 
         payload = {
             "model": "claude-sonnet-4-5",
-            "max_tokens": 8000,
+            "max_tokens": 16000,
             "messages": [
                 {"role": "user", "content": prompt}
             ]

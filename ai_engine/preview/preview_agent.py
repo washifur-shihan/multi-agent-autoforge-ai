@@ -28,17 +28,75 @@ class PreviewAgent:
         except Exception as exc:
             raise RuntimeError(f"Could not read package.json: {exc}") from exc
 
-    def choose_npm_script(self, package_json):
+    def choose_npm_script(self, package_json, package_json_path=None):
         scripts = package_json.get("scripts") or {}
 
-        for script_name in ("dev", "start", "serve", "preview"):
+        # Prefer start for preview because it usually uses plain node.
+        for script_name in ("start", "serve", "preview"):
             if script_name in scripts:
                 return script_name
+
+        # Use dev only if no better option exists.
+        if "dev" in scripts:
+            dev_script = scripts["dev"]
+
+            # If dev uses nodemon, replace it with node so preview works without nodemon.
+            if "nodemon" in dev_script:
+                scripts["dev"] = dev_script.replace("nodemon", "node")
+
+                if package_json_path:
+                    package_json_path.write_text(
+                        json.dumps(package_json, indent=2),
+                        encoding="utf-8"
+                    )
+
+            return "dev"
 
         available = ", ".join(sorted(scripts.keys())) or "none"
         raise RuntimeError(
             f"No preview script found in package.json. Available scripts: {available}"
         )
+
+    def install_node_dependencies(self, project_path, npm_cmd, env, script_name):
+        """
+        Install npm dependencies if node_modules is missing.
+        This fixes errors like: Cannot find module 'express'.
+        """
+
+        node_modules_path = Path(project_path) / "node_modules"
+
+        if node_modules_path.exists():
+            return {
+                "success": True,
+                "skipped": True,
+                "message": "node_modules already exists"
+            }
+
+        install_process = subprocess.run(
+            [npm_cmd, "install"],
+            cwd=str(project_path),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=env,
+            timeout=180
+        )
+
+        if install_process.returncode != 0:
+            return {
+                "success": False,
+                "error": "npm install failed",
+                "stdout": install_process.stdout,
+                "stderr": install_process.stderr,
+                "project_type": "node",
+                "script_used": script_name
+            }
+
+        return {
+            "success": True,
+            "skipped": False,
+            "message": "npm install completed"
+        }
 
     def find_index_html(self, project_path):
         project_path = Path(project_path)
@@ -90,6 +148,7 @@ class PreviewAgent:
             env.setdefault("HOST", "127.0.0.1")
 
             npm_cmd = "npm.cmd" if os.name == "nt" else "npm"
+            python_cmd = "python"
 
             package_json_path = project_path / "package.json"
 
@@ -97,12 +156,22 @@ class PreviewAgent:
             if package_json_path.exists():
                 try:
                     package_json = self.read_package_json(project_path)
-                    script_name = self.choose_npm_script(package_json)
+                    script_name = self.choose_npm_script(package_json, package_json_path)
                 except RuntimeError as exc:
                     return {
                         "success": False,
                         "error": str(exc)
                     }
+
+                install_result = self.install_node_dependencies(
+                    project_path=project_path,
+                    npm_cmd=npm_cmd,
+                    env=env,
+                    script_name=script_name
+                )
+
+                if not install_result.get("success"):
+                    return install_result
 
                 cmd = [
                     npm_cmd,
@@ -122,7 +191,7 @@ class PreviewAgent:
                     cwd = index_html.parent
 
                     cmd = [
-                        "python",
+                        python_cmd,
                         "-m",
                         "http.server",
                         str(port),
@@ -141,7 +210,7 @@ class PreviewAgent:
                         cwd = python_entry.parent
 
                         cmd = [
-                            "python",
+                            python_cmd,
                             str(python_entry)
                         ]
 
@@ -193,6 +262,12 @@ class PreviewAgent:
                 "port": port,
                 "project_type": project_type,
                 "script_used": script_used
+            }
+
+        except subprocess.TimeoutExpired:
+            return {
+                "success": False,
+                "error": "Dependency installation timed out"
             }
 
         except Exception as exc:

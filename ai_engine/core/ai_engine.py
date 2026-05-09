@@ -31,7 +31,7 @@ from ai_engine.planner.task_graph_executor import TaskGraphExecutor
 from ai_engine.planner.project_architect import ProjectArchitect
 from ai_engine.planner.project_initializer import ProjectInitializer
 import re
-
+from ai_engine.providers.provider_factory import ProviderFactory
 
 def clean_for_pdf(text):
     import re
@@ -121,9 +121,61 @@ class AIEngine:
 
         return enhanced_prompt
 
+    def is_image_generation_prompt(self, prompt):
+        text = prompt.lower()
+
+        action_words = [
+            "generate",
+            "create",
+            "make",
+            "draw",
+            "design"
+        ]
+
+        image_words = [
+            "image",
+            "picture",
+            "photo",
+            "illustration",
+            "cartoon",
+            "poster",
+            "logo",
+            "avatar",
+            "wallpaper"
+        ]
+
+        has_action = any(word in text for word in action_words)
+        has_image_word = any(word in text for word in image_words)
+
+        return has_action and has_image_word
+
+    def handle_image_generation(self, prompt):
+        gemini = ProviderFactory.get_provider("gemini")
+        result = gemini.generate_image(prompt, output_dir="generated_projects")
+
+        response = {
+            "formatted_results": [
+                {
+                    "task_type": "image_generation",
+                    "provider": "gemini",
+                    "status": result.get("status"),
+                    "output": result.get("output"),
+                    "image_path": result.get("image_path"),
+                    "tokens_used": result.get("tokens_used")
+                }
+            ],
+            "image_path": result.get("image_path")
+        }
+
+        return response
 
 
     def run_pipeline(self, prompt, pdf_path=None):
+
+        if self.is_image_generation_prompt(prompt):
+            print("\n--- GEMINI IMAGE GENERATION ---\n")
+            return self.handle_image_generation(prompt)
+            
 
         pdf_context = None
 

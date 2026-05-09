@@ -35,6 +35,7 @@ Rules:
 3. Assign execution priority (1 = first).
 4. Return ONLY valid JSON.
 5. Do NOT include 'slides' unless the user explicitly asks for a presentation or slides.
+6. If the user asks to generate, create, draw, or make an image, picture, photo, cartoon, logo, poster, avatar, or illustration, use task_type "image_generation".
 
 User prompt:
 {user_prompt}

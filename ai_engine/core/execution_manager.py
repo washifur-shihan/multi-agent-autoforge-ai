@@ -15,6 +15,8 @@ class ExecutionManager:
         for task in execution_plan["execution_plan"]:
 
             provider_name = task["provider"]
+            if task["task_type"] == "image_generation":
+                provider_name = "gemini"
             intent = task["intent"]
 
             try:
@@ -42,23 +44,32 @@ class ExecutionManager:
                     raise Exception("Provider returned error status.")
 
             except Exception as e:
-                print(f"[EXECUTION WARNING] Provider {provider_name} failed: {e}. Falling back to default (OpenAI).")
-                try:
-                    fallback_provider = ProviderFactory.get_provider("openai")
-                    # Needs the prompts if it failed before building them, so we rebuild just in case
-                    base_prompt = PromptManager.get_prompt(task["task_type"], intent)
-                    structured_prompt = self.prompt_builder.build_prompt(task, architecture)
-                    final_prompt = base_prompt + "\n" + structured_prompt
-                    
-                    response = fallback_provider.generate_response(final_prompt)
-                except Exception as fallback_e:
-                    print(f"[EXECUTION ERROR] Fallback also failed: {fallback_e}")
+                if task["task_type"] == "image_generation":
                     response = {
-                        "provider": provider_name,
+                        "provider": "gemini",
                         "status": "error",
-                        "output": f"Primary error: {e}. Fallback error: {fallback_e}",
+                        "output": f"Gemini image generation failed: {e}",
                         "tokens_used": None
                     }
+                else:
+                    print(f"[EXECUTION WARNING] Provider {provider_name} failed: {e}. Falling back to default (OpenAI).")
+                    try:
+                        fallback_provider = ProviderFactory.get_provider("openai")
+
+                        base_prompt = PromptManager.get_prompt(task["task_type"], intent)
+                        structured_prompt = self.prompt_builder.build_prompt(task, architecture)
+                        final_prompt = base_prompt + "\n" + structured_prompt
+
+                        response = fallback_provider.generate_response(final_prompt)
+
+                    except Exception as fallback_e:
+                        print(f"[EXECUTION ERROR] Fallback also failed: {fallback_e}")
+                        response = {
+                            "provider": provider_name,
+                            "status": "error",
+                            "output": f"Primary error: {e}. Fallback error: {fallback_e}",
+                            "tokens_used": None
+                        }
 
             results.append({
                 "task_type": task["task_type"],

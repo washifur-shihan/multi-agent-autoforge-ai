@@ -32,18 +32,22 @@ class WorkspaceTools:
         except Exception as e:
             return str(e)
 
-    def write_file(self, input_text):
+    def write_file(self, input_text, content_arg=None):
         """
         Write content to file.
-        Expected format: file_path | content
+        Supports either:
+          - write_file("file_path | content")
+          - write_file("file_path", "content")
         """
 
         try:
-
-            if "|" not in input_text:
-                return "Invalid input format. Use: file_path | content"
-
-            path, content = input_text.split("|", 1)
+            if content_arg is not None:
+                path = input_text
+                content = content_arg
+            else:
+                if "|" not in input_text:
+                    return "Invalid input format. Use: file_path | content"
+                path, content = input_text.split("|", 1)
 
             path = self._sanitize_path(path)
             content = content.strip()
@@ -54,9 +58,6 @@ class WorkspaceTools:
             folder = os.path.dirname(full_path)
             os.makedirs(folder, exist_ok=True)
 
-            if os.path.exists(full_path):
-                return f"File already exists, skipping: {full_path}"
-
             with open(full_path, "w", encoding="utf-8") as f:
                 f.write(content)
             
@@ -65,16 +66,18 @@ class WorkspaceTools:
         except Exception as e:
             return str(e)
 
-    def edit_file(self, path, new_content):
+    def edit_file(self, path, new_content=None):
         """Overwrite file with new content"""
         try:
-
-            path = os.path.normpath(path)
+            if new_content is None and "|" in path:
+                path, new_content = path.split("|", 1)
+            path = self._sanitize_path(path)
             full_path = os.path.join(self.WORKSPACE_ROOT, path)
             full_path = os.path.normpath(full_path)
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
             with open(full_path, "w", encoding="utf-8") as f:
-                f.write(new_content)
+                f.write((new_content or "").strip())
 
             return "File edited successfully"
 

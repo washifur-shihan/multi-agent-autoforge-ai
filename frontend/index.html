@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoforge AI — Personal Engineering & Research Workbench</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- Top Institutional Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="brand-mark" aria-hidden="true">AF</div>
+            <div class="brand-titles">
+                <h1 class="brand-name">Autoforge AI</h1>
+                <span class="brand-subtitle">Autonomous Software Architecture, Multi-Agent Execution &amp; Research Synthesis</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="edition-badge">Personal Workbench &middot; Washifur</span>
+            <span id="system-health-pill" class="status-pill status-online">System Ready</span>
+            <a href="/docs" target="_blank" rel="noopener" class="header-link">OpenAPI Specification &rarr;</a>
+        </div>
+    </header>
+
+    <!-- Primary 3-Column Editorial Workbench Layout -->
+    <div class="workbench-layout">
+        <!-- Left Navigation & Presets Column -->
+        <aside class="sidebar-nav">
+            <div class="panel-section">
+                <h2 class="section-heading">Execution Mode</h2>
+                <nav class="mode-selector" role="tablist">
+                    <button type="button" class="mode-btn active" data-mode="pipeline">
+                        <span class="mode-title">Autonomous Pipeline</span>
+                        <span class="mode-desc">Full task decomposition, code generation, validation, self-repair &amp; PDF synthesis</span>
+                    </button>
+                    <button type="button" class="mode-btn" data-mode="chat">
+                        <span class="mode-title">Direct Consultation</span>
+                        <span class="mode-desc">Stateful architectural discussion &amp; technical Q&amp;A session</span>
+                    </button>
+                    <button type="button" class="mode-btn" data-mode="archive">
+                        <span class="mode-title">Generated Archive</span>
+                        <span class="mode-desc">Inspect, download, or launch previews of generated deliverables</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="panel-section">
+                <h2 class="section-heading">Standard Specifications</h2>
+                <p class="section-note">Select a reference specification to populate the command console:</p>
+                <div class="preset-list">
+                    <button type="button" class="preset-item" data-prompt="Create a clean Python Flask REST API with health check, task registry endpoints, and unit tests.">
+                        <strong>01. Python REST Service</strong>
+                        <span>Flask API with structured endpoints &amp; automated runtime verification</span>
+                    </button>
+                    <button type="button" class="preset-item" data-prompt="Build a complete HTML, CSS, and JavaScript personal portfolio and documentation website with clean classical typography.">
+                        <strong>02. Static Web Portal</strong>
+                        <span>Multi-file HTML/CSS/JS project packaged into a downloadable archive</span>
+                    </button>
+                    <button type="button" class="preset-item" data-prompt="Research the architectural trade-offs between multi-agent orchestration and monolithic LLM pipelines and compile an executive PDF report.">
+                        <strong>03. Executive Research Report</strong>
+                        <span>Web research synthesis formatted into a downloadable PDF document</span>
+                    </button>
+                    <button type="button" class="preset-item" data-prompt="Build a Python automation script that scans a directory, computes SHA-256 checksums of all files, and exports an audit log in CSV format.">
+                        <strong>04. File Audit Automation</strong>
+                        <span>Standalone Python utility verified in isolated subprocess execution</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-section sidebar-footer">
+                <h2 class="section-heading">Architecture Pipeline</h2>
+                <ol class="pipeline-steps-list">
+                    <li><span>1.</span> Intent &amp; Task Analysis</li>
+                    <li><span>2.</span> System Architecture Planning</li>
+                    <li><span>3.</span> Multi-Provider Routing</li>
+                    <li><span>4.</span> Code / Report Synthesis</li>
+                    <li><span>5.</span> Validation &amp; Self-Repair</li>
+                </ol>
+            </div>
+        </aside>
+
+        <!-- Center Primary Workspace -->
+        <main class="main-workspace">
+            <!-- View 1: Autonomous Pipeline View -->
+            <section id="view-pipeline" class="workspace-view active">
+                <div class="card console-card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Autonomous Task Specification</h2>
+                            <p class="card-subtitle">Describe the software project, automation utility, or research briefing for Autoforge AI to build.</p>
+                        </div>
+                        <span class="meta-tag">Endpoint: <code>POST /api/generate</code></span>
+                    </div>
+
+                    <form id="pipeline-form" class="console-form">
+                        <label for="pipeline-prompt" class="sr-only">Task Specification</label>
+                        <textarea
+                            id="pipeline-prompt"
+                            rows="5"
+                            placeholder="Enter a formal specification (e.g., 'Create a Python Flask API with status and metrics endpoints' or 'Research enterprise AI governance and compile a PDF report')..."
+                            required
+                        ></textarea>
+
+                        <div class="form-actions">
+                            <div class="form-hint">
+                                Pipeline automatically routes across configured providers and runs runtime verification on generated code.
+                            </div>
+                            <div class="button-group">
+                                <button type="button" id="clear-pipeline-btn" class="btn btn-secondary">Clear</button>
+                                <button type="submit" id="run-pipeline-btn" class="btn btn-primary">Execute Pipeline</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Execution Progress & Stage Indicator -->
+                <div id="pipeline-progress" class="card progress-card hidden">
+                    <div class="progress-header">
+                        <strong>Autoforge AI Execution Pipeline Running&hellip;</strong>
+                        <span id="progress-timer" class="mono-text">0.0s</span>
+                    </div>
+                    <div class="stage-bar">
+                        <div class="stage-step active">Task Analysis</div>
+                        <div class="stage-step">Architecture Plan</div>
+                        <div class="stage-step">Model Execution</div>
+                        <div class="stage-step">Validation &amp; Packaging</div>
+                    </div>
+                </div>
+
+                <!-- Pipeline Output Ledger -->
+                <div id="pipeline-results-container" class="results-ledger">
+                    <div class="empty-state">
+                        <h3>No Active Execution Output</h3>
+                        <p>Submit a task specification above or choose a reference specification from the left ledger to initiate the Autoforge AI pipeline.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View 2: Direct Consultation (Chat) View -->
+            <section id="view-chat" class="workspace-view hidden">
+                <div class="card chat-card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Direct Architectural Consultation</h2>
+                            <p class="card-subtitle">Conversational session with persistent memory across turns.</p>
+                        </div>
+                        <div class="chat-controls">
+                            <label for="chat-provider-select" class="control-label">Provider:</label>
+                            <select id="chat-provider-select" class="select-input">
+                                <option value="mistral">Mistral Vibe AI</option>
+                                <option value="grok">Grok (xAI)</option>
+                                <option value="openai">OpenAI GPT</option>
+                                <option value="gemini">Google Gemini</option>
+                                <option value="claude">Anthropic Claude</option>
+                                <option value="nvidia">NVIDIA NIM</option>
+                            </select>
+                            <button type="button" id="reset-chat-btn" class="btn btn-secondary btn-sm">New Session</button>
+                        </div>
+                    </div>
+
+                    <div id="chat-transcript" class="chat-transcript">
+                        <div class="chat-message assistant-message">
+                            <div class="message-meta">Autoforge AI &middot; System Initialization</div>
+                            <div class="message-body">
+                                Welcome to the Autoforge AI consultation console. You may ask architectural questions, refine specifications, or discuss code design before running a full build pipeline.
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="chat-form" class="chat-input-bar">
+                        <input
+                            type="text"
+                            id="chat-input"
+                            placeholder="Write your question or engineering inquiry..."
+                            autocomplete="off"
+                            required
+                        />
+                        <button type="submit" id="send-chat-btn" class="btn btn-primary">Send Inquiry</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- View 3: Generated Archive View -->
+            <section id="view-archive" class="workspace-view hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Generated Deliverables &amp; Project Archive</h2>
+                            <p class="card-subtitle">All projects, ZIP packages, and PDF reports stored in <code>generated_projects/</code>.</p>
+                        </div>
+                        <button type="button" id="refresh-archive-btn" class="btn btn-secondary btn-sm">Refresh Registry</button>
+                    </div>
+
+                    <div id="archive-table-wrapper" class="table-container">
+                        <p class="muted-text">Loading archive registry&hellip;</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right System Telemetry & Diagnostics Column -->
+        <aside class="sidebar-telemetry">
+            <div class="panel-section">
+                <h2 class="section-heading">Provider Registry</h2>
+                <p class="section-note">Configured credentials in environment (<code>.env</code>):</p>
+                <ul id="provider-status-list" class="telemetry-list">
+                    <li class="telemetry-row">
+                        <span>Mistral Vibe AI</span>
+                        <span class="badge">Checking&hellip;</span>
+                    </li>
+                    <li class="telemetry-row">
+                        <span>Grok (xAI)</span>
+                        <span class="badge">Checking&hellip;</span>
+                    </li>
+                    <li class="telemetry-row">
+                        <span>OpenAI GPT</span>
+                        <span class="badge">Checking&hellip;</span>
+                    </li>
+                    <li class="telemetry-row">
+                        <span>Google Gemini</span>
+                        <span class="badge">Checking&hellip;</span>
+                    </li>
+                    <li class="telemetry-row">
+                        <span>Anthropic Claude</span>
+                        <span class="badge">Checking&hellip;</span>
+                    </li>
+                    <li class="telemetry-row">
+                        <span>NVIDIA NIM</span>
+                        <span class="badge">Checking&hellip;</span>
+                    </li>
+                    <li class="telemetry-row">
+                        <span>Tavily Web Search</span>
+                        <span class="badge">Checking&hellip;</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="panel-section">
+                <h2 class="section-heading">Workspace Summary</h2>
+                <dl class="metrics-grid">
+                    <div class="metric-box">
+                        <dt>Total Deliverables</dt>
+                        <dd id="metric-artifacts">0</dd>
+                    </div>
+                    <div class="metric-box">
+                        <dt>Active Previews</dt>
+                        <dd id="metric-previews">0</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="panel-section">
+                <h2 class="section-heading">Live Preview Server</h2>
+                <p class="section-note">Launch a local preview server for any generated project directory:</p>
+                <form id="preview-form" class="compact-form">
+                    <input
+                        type="text"
+                        id="preview-path-input"
+                        class="text-input"
+                        placeholder="generated_projects/..."
+                        required
+                    />
+                    <div class="button-row">
+                        <button type="submit" class="btn btn-secondary btn-sm">Start Preview</button>
+                        <button type="button" id="stop-preview-btn" class="btn btn-secondary btn-sm">Stop</button>
+                    </div>
+                </form>
+                <div id="preview-status-box" class="preview-status-box hidden"></div>
+            </div>
+
+            <div class="panel-section">
+                <h2 class="section-heading">System Specification</h2>
+                <table class="spec-table">
+                    <tbody>
+                        <tr>
+                            <th>Designation</th>
+                            <td>Autoforge AI</td>
+                        </tr>
+                        <tr>
+                            <th>Branch</th>
+                            <td><code>washifur</code></td>
+                        </tr>
+                        <tr>
+                            <th>Repair Cycles</th>
+                            <td>Up to 3 passes</td>
+                        </tr>
+                        <tr>
+                            <th>PDF Engine</th>
+                            <td>FPDF2 / ReportLab</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </aside>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
+

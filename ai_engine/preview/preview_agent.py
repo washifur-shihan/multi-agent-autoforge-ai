@@ -2,6 +2,7 @@ import json
 import os
 import socket
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -148,7 +149,7 @@ class PreviewAgent:
             env.setdefault("HOST", "127.0.0.1")
 
             npm_cmd = "npm.cmd" if os.name == "nt" else "npm"
-            python_cmd = "python"
+            python_cmd = sys.executable or "python3"
 
             package_json_path = project_path / "package.json"
 

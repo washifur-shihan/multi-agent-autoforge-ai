@@ -1,6 +1,7 @@
 import subprocess
 import tempfile
 import os
+import sys
 
 
 class PythonTool:
@@ -23,9 +24,10 @@ class PythonTool:
                 temp_file = f.name
 
             result = subprocess.run(
-                ["python", temp_file],
+                [sys.executable, temp_file],
                 capture_output=True,
-                text=True
+                text=True,
+                timeout=15
             )
 
             os.remove(temp_file)

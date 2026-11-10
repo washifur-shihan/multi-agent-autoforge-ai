@@ -19,11 +19,7 @@ load_dotenv()
 class GeminiClient(BaseProvider):
     def __init__(self):
         self.api_key = os.getenv("GEMINI_API_KEY")
-
-        if not self.api_key:
-            raise ValueError("GEMINI_API_KEY not found in environment variables")
-
-        self.client = genai.Client(api_key=self.api_key)
+        self.client = genai.Client(api_key=self.api_key) if self.api_key else None
 
         self.text_model = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.5-flash")
         self.image_model = os.getenv(
@@ -31,7 +27,18 @@ class GeminiClient(BaseProvider):
             "gemini-3.1-flash-image-preview"
         )
 
+    @property
+    def is_configured(self) -> bool:
+        return bool(self.api_key and self.client)
+
     def generate_response(self, prompt, config=None):
+        if not self.is_configured:
+            return {
+                "provider": "gemini",
+                "status": "error",
+                "output": "GEMINI_API_KEY is not configured in environment variables (.env).",
+                "tokens_used": None
+            }
         try:
             model = config.get("model") if config and config.get("model") else self.text_model
 
@@ -57,16 +64,46 @@ class GeminiClient(BaseProvider):
                 "tokens_used": None
             }
 
+    def generate_chat_response(self, messages: list, config: dict = None):
+        if not self.is_configured:
+            return {
+                "provider": "gemini",
+                "status": "error",
+                "output": "GEMINI_API_KEY is not configured in environment variables (.env).",
+                "tokens_used": None
+            }
+        try:
+            transcript = "\n".join(
+                f"{m.get('role', 'user').upper()}: {m.get('content', '')}"
+                for m in messages
+            )
+            return self.generate_response(transcript, config=config)
+        except Exception as e:
+            return {
+                "provider": "gemini",
+                "status": "error",
+                "output": str(e),
+                "tokens_used": None
+            }
+
     def generate_image(self, prompt, output_dir="generated_projects"):
         """
         Generates an image using Gemini only and saves it inside generated_projects.
         """
+        if not self.is_configured:
+            return {
+                "provider": "gemini",
+                "status": "error",
+                "output": "GEMINI_API_KEY is not configured in environment variables (.env).",
+                "image_path": None,
+                "tokens_used": None
+            }
 
         try:
             Path(output_dir).mkdir(parents=True, exist_ok=True)
 
             safe_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"gemini_image_{safe_timestamp}_{uuid4().hex[:6]}.png"
+            filename = f"autoforge_image_{safe_timestamp}_{uuid4().hex[:6]}.png"
             output_path = Path(output_dir) / filename
 
             response = self.client.models.generate_content(

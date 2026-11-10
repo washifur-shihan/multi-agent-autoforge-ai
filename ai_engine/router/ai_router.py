@@ -100,7 +100,10 @@ class AIRouter:
         if task_type in ["research", "slides", "image_generation"]:
             return "gemini"
 
-        if task_type in ["chat", "design", "python", "automation", "script"]:
+        if task_type in ["python", "automation", "script"]:
+            return "mistral"
+
+        if task_type in ["chat", "design", "conversation"]:
             return "openai"
 
-        return "claude"
+        return "mistral"

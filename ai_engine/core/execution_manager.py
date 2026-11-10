@@ -59,7 +59,7 @@ class ExecutionManager:
         }
 
     def _attempt_fallbacks(self, failed_provider: str, final_prompt: str, primary_error: Exception):
-        fallback_order = ["openai", "gemini", "claude", "nvidia"]
+        fallback_order = ["mistral", "openai", "gemini", "claude", "nvidia"]
         last_error = str(primary_error)
 
         for alt_name in fallback_order:

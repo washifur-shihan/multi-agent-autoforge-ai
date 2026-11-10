@@ -11,3 +11,4 @@ fi
 
 echo "[Autoforge AI] Starting server at http://localhost:8000 ..."
 exec ./.venv/bin/python api.py
+

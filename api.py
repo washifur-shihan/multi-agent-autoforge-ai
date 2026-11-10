@@ -203,8 +203,8 @@ def chat_endpoint(req: ChatRequest):
             # Helpful fallback message when no API keys are configured in .env yet
             fallback_msg = (
                 f"[Notice: {result.get('output', 'Provider unavailable')}]\n\n"
-                "Autoforge AI is online and ready, but no external LLM API key was detected in `.env`. "
-                "Add `OPENAI_API_KEY`, `GEMINI_API_KEY`, or `CLAUDE_API_KEY` to your `.env` file to enable live model completions."
+                "Autoforge AI is online and ready, but no active LLM API key replied. "
+                "Add at least one key (`MISTRAL_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `CLAUDE_API_KEY`, or `NVIDIA_API_KEY`) to your `.env` file."
             )
             return {
                 "status": "warning",

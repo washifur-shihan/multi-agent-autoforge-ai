@@ -83,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const listEl = document.getElementById("provider-status-list");
             const providers = data.providers || {};
             const rows = [
+                { label: "Mistral Vibe AI", ok: providers.mistral },
                 { label: "OpenAI GPT", ok: providers.openai },
                 { label: "Google Gemini", ok: providers.gemini },
                 { label: "Anthropic Claude", ok: providers.claude },

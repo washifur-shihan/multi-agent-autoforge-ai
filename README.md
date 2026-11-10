@@ -6,7 +6,7 @@ Built with FastAPI, Python, and a lightweight vanilla JS frontend.
 
 ## Overview
 
-Autoforge AI takes a prompt, breaks it down into tasks, plans the folder structure, and routes the generation step across whatever LLM provider keys are available in `.env`. 
+Autoforge AI takes a prompt, breaks it down into tasks, plans the folder structure, and routes the generation step across whatever LLM provider keys are available in `.env`.
 
 Once code is generated, the backend writes the files to `generated_projects/`, validates the structure, runs a quick startup check (with up to 3 automatic repair attempts if a Python script crashes), and packages everything into a `.zip` file. It also includes a local preview runner (`PreviewAgent`) that spins up generated Node/Express, static HTML, or Python projects on a free localhost port.
 

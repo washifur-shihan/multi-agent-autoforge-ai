@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const previewForm = document.getElementById("preview-form");
     const previewPathInput = document.getElementById("preview-path-input");
     const stopPreviewBtn = document.getElementById("stop-preview-btn");
+    const stopAllPreviewBtn = document.getElementById("stop-all-preview-btn");
     const previewStatusBox = document.getElementById("preview-status-box");
 
     let currentSessionId = "autoforge_" + Date.now();
@@ -474,6 +475,32 @@ document.addEventListener("DOMContentLoaded", () => {
             previewStatusBox.textContent = err.message;
         }
     });
+
+    if (stopAllPreviewBtn) {
+        stopAllPreviewBtn.addEventListener("click", async () => {
+            try {
+                const res = await fetch("/api/preview/stop-all", { method: "POST" });
+                const data = await res.json();
+                previewStatusBox.classList.remove("hidden");
+                previewStatusBox.textContent = data.message || "All previews stopped.";
+                loadSystemStatus();
+            } catch (err) {
+                previewStatusBox.classList.remove("hidden");
+                previewStatusBox.textContent = err.message;
+            }
+        });
+    }
+
+    // Auto-stop previews when navigating away, closing tab, or reloading dashboard
+    function autoStopActivePreviews() {
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon("/api/preview/stop-all");
+        } else {
+            fetch("/api/preview/stop-all", { method: "POST", keepalive: true }).catch(() => {});
+        }
+    }
+    window.addEventListener("pagehide", autoStopActivePreviews);
+    window.addEventListener("beforeunload", autoStopActivePreviews);
 
     async function startPreview(projectPath) {
         previewStatusBox.classList.remove("hidden");

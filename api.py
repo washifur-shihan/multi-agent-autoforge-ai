@@ -73,7 +73,7 @@ def get_system_status():
         "providers": providers,
         "web_search": tavily_configured,
         "artifact_count": len(projects),
-        "active_previews": list(preview_agent.active_processes.keys()),
+        "active_previews": preview_agent.get_active_projects(),
     }
 
 
@@ -145,6 +145,12 @@ def preview_project(req: PreviewRequest):
 @app.post("/api/preview/stop")
 def stop_preview_project(req: PreviewRequest):
     return preview_agent.stop_preview(req.project_path)
+
+
+@app.post("/api/preview/stop-all")
+def stop_all_previews():
+    """Stops all running preview subprocesses."""
+    return preview_agent.stop_all()
 
 
 @app.get("/preview/{project_name}")

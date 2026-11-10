@@ -324,6 +324,39 @@ class PreviewAgent:
                 "error": str(exc)
             }
 
+    def get_active_projects(self):
+        """Clean up any dead processes and return list of actively running project paths."""
+        dead = []
+        for path, info in list(self.active_processes.items()):
+            proc = info.get("process")
+            if not proc or proc.poll() is not None:
+                dead.append(path)
+        for path in dead:
+            self.active_processes.pop(path, None)
+        return list(self.active_processes.keys())
+
+    def stop_all(self):
+        """Terminates all active preview processes."""
+        stopped = []
+        for path, info in list(self.active_processes.items()):
+            proc = info.get("process")
+            if proc:
+                try:
+                    proc.terminate()
+                    proc.wait(timeout=2)
+                except Exception:
+                    try:
+                        proc.kill()
+                    except Exception:
+                        pass
+            stopped.append(path)
+        self.active_processes.clear()
+        return {
+            "success": True,
+            "message": f"Stopped {len(stopped)} active preview(s)",
+            "stopped": stopped
+        }
+
     def stop_preview(self, project_path):
         try:
             project_path = str(Path(project_path).resolve())

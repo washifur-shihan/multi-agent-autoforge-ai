@@ -4,7 +4,7 @@ import json
 
 class TaskAnalyzer:
     """
-    Task Analyzer for Aurora Agent AI.
+    Task Analyzer for Autoforge AI.
     Uses configured LLM provider to analyze user prompts and detect one or multiple tasks,
     with deterministic keyword-based heuristic fallback when no LLM provider is configured.
     """
@@ -17,7 +17,7 @@ class TaskAnalyzer:
         Analyze the user prompt and return detected tasks.
         """
         analyzer_prompt = f"""
-You are an AI task analyzer for Aurora Agent AI.
+You are an AI task analyzer for Autoforge AI.
 
 Your job is to analyze user prompts and identify tasks.
 

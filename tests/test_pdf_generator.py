@@ -6,9 +6,9 @@ def test_pdf():
     generator = PDFGenerator()
 
     text = """
-Aurora Agent AI Report
+Autoforge AI Report
 
-This PDF was generated automatically by Aurora Agent AI.
+This PDF was generated automatically by Autoforge AI.
 
 The system can export reports,
 analysis, or documentation.

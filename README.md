@@ -1,8 +1,8 @@
-# Aurora Agent AI — Personal Autonomous Engineering & Research Workbench
+# Autoforge AI — Personal Autonomous Engineering & Research Workbench
 
-Welcome to **Aurora Agent AI** (Personal Edition — Washifur).
+Welcome to **Autoforge AI** (Personal Edition — Washifur).
 
-Aurora Agent AI is an autonomous multi-agent software engineering, architectural planning, and research synthesis platform. It includes both a full FastAPI backend pipeline and a classical, restrained light-themed web workbench.
+Autoforge AI is an autonomous multi-agent software engineering, architectural planning, and research synthesis platform. It includes both a full FastAPI backend pipeline and a classical, restrained light-themed web workbench.
 
 ---
 
@@ -19,8 +19,8 @@ Aurora Agent AI is an autonomous multi-agent software engineering, architectural
 
 ## Architecture & Workflow
 
-1. **Web / Application Specification:** Aurora Agent AI designs the architecture, generates multi-file project code (`src/app.py`, `requirements.txt`, `index.html`, etc.), writes to `generated_projects/`, validates entry points, runs startup tests with self-repair, and packages a downloadable `.zip` archive.
-2. **Research / Executive Document Specification:** Aurora Agent AI gathers web context via `ResearchAgent`, structures an executive report via `ReportBuilderV2`, and compiles a downloadable PDF document (`generated_report.pdf`).
+1. **Web / Application Specification:** Autoforge AI designs the architecture, generates multi-file project code (`src/app.py`, `requirements.txt`, `index.html`, etc.), writes to `generated_projects/`, validates entry points, runs startup tests with self-repair, and packages a downloadable `.zip` archive.
+2. **Research / Executive Document Specification:** Autoforge AI gathers web context via `ResearchAgent`, structures an executive report via `ReportBuilderV2`, and compiles a downloadable PDF document (`generated_report.pdf`).
 3. **Direct Architectural Consultation:** Interactive stateful chat (`/api/chat`) for rapid technical Q&A and specification refinement.
 
 ---
@@ -29,7 +29,7 @@ Aurora Agent AI is an autonomous multi-agent software engineering, architectural
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/` | Serves the Aurora Agent AI Web Workbench (Light Theme) |
+| `GET` | `/` | Serves the Autoforge AI Web Workbench (Light Theme) |
 | `GET` | `/api/status` | Returns system health, configured AI providers, and workspace metrics |
 | `POST` | `/api/generate` | Runs the full autonomous multi-agent generation pipeline |
 | `POST` | `/api/chat` | Stateful conversational endpoint with multi-provider selection |
@@ -42,19 +42,16 @@ Aurora Agent AI is an autonomous multi-agent software engineering, architectural
 
 ## Quick Start
 
-1. **Configure Environment Variables (Optional / Recommended):**
-   Copy `.env.example` to `.env` and add one or more provider keys:
-   ```bash
-   cp .env.example .env
-   ```
+1. **Configure Environment Variables:**
+   Open `.env` in the project root and add one or more provider keys (`OPENAI_API_KEY`, `GEMINI_API_KEY`, `CLAUDE_API_KEY`, `TAVILY_API_KEY`).
 
 2. **Install Dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Launch Aurora Agent AI:**
+3. **Launch Autoforge AI:**
    ```bash
    python api.py
    ```
-   Open `http://localhost:8000` in your browser to access the **Aurora Agent AI Workbench**, or visit `http://localhost:8000/docs` for the interactive OpenAPI documentation.
+   Open `http://localhost:8000` in your browser to access the **Autoforge AI Workbench**, or visit `http://localhost:8000/docs` for the interactive OpenAPI documentation.

@@ -1,5 +1,5 @@
 """
-Aurora Agent AI — Provider Configuration & Default Model Registry
+Autoforge AI — Provider Configuration & Default Model Registry
 """
 
 DEFAULT_MODELS = {

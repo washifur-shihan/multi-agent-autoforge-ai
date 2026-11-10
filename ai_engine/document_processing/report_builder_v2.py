@@ -4,7 +4,7 @@ import datetime
 class ReportBuilderV2:
 
     """
-    Builds a structured professional report before PDF generation for Aurora Agent AI.
+    Builds a structured professional report before PDF generation for Autoforge AI.
     """
 
     def build_report(self, title, content):
@@ -16,13 +16,13 @@ class ReportBuilderV2:
 ==================================================
 
 Date: {date}
-Author: Aurora Agent AI — Research & Synthesis Engine
+Author: Autoforge AI — Research & Synthesis Engine
 
 
 EXECUTIVE SUMMARY
 --------------------------------------------------
 
-This briefing was compiled autonomously by Aurora Agent AI.
+This briefing was compiled autonomously by Autoforge AI.
 It synthesizes key findings, domain insights, and strategic recommendations
 based on the requested objective and verified sources.
 
@@ -53,7 +53,7 @@ reference material for engineering, research, and strategic decision-making.
 REFERENCES
 --------------------------------------------------
 
-Compiled automatically by Aurora Agent AI (Personal Edition — Washifur).
+Compiled automatically by Autoforge AI (Personal Edition — Washifur).
 
 """
 

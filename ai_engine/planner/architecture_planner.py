@@ -4,7 +4,7 @@ import re
 
 class ArchitecturePlanner:
     """
-    Plans software architecture based on detected tasks in Aurora Agent AI.
+    Plans software architecture based on detected tasks in Autoforge AI.
     Safely handles malformed or empty analyzer outputs.
     """
 

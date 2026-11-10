@@ -9,7 +9,7 @@ load_dotenv()
 
 class OpenAIProvider(BaseProvider):
     """
-    OpenAI provider implementation for Aurora Agent AI.
+    OpenAI provider implementation for Autoforge AI.
     Handles communication with OpenAI models with graceful fallback when unconfigured.
     """
 
@@ -49,7 +49,7 @@ class OpenAIProvider(BaseProvider):
             response = self.client.chat.completions.create(
                 model=model,
                 messages=[
-                    {"role": "system", "content": "You are Aurora Agent AI, a helpful and precise autonomous software engineering and research assistant."},
+                    {"role": "system", "content": "You are Autoforge AI, a helpful and precise autonomous software engineering and research assistant."},
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.7,

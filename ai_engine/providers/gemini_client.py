@@ -103,7 +103,7 @@ class GeminiClient(BaseProvider):
             Path(output_dir).mkdir(parents=True, exist_ok=True)
 
             safe_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"aurora_image_{safe_timestamp}_{uuid4().hex[:6]}.png"
+            filename = f"autoforge_image_{safe_timestamp}_{uuid4().hex[:6]}.png"
             output_path = Path(output_dir) / filename
 
             response = self.client.models.generate_content(

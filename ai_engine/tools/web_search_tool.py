@@ -7,7 +7,7 @@ load_dotenv()
 
 class WebSearchTool:
     """
-    Web search tool using Tavily API for Aurora Agent AI.
+    Web search tool using Tavily API for Autoforge AI.
     Gracefully handles missing API keys without crashing initialization.
     """
 

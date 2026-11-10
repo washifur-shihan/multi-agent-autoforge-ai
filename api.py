@@ -11,7 +11,7 @@ from ai_engine.providers.provider_factory import ProviderFactory
 
 
 app = FastAPI(
-    title="Aurora Agent AI — Personal Autonomous Engineering & Research Workbench",
+    title="Autoforge AI — Personal Autonomous Engineering & Research Workbench",
     description="Personal multi-agent AI engineering, research synthesis, and project generation system for Washifur.",
     version="2.0.0"
 )
@@ -51,13 +51,13 @@ def serve_workbench():
     index_file = Path("frontend/index.html")
     if index_file.exists():
         return FileResponse(index_file)
-    return {"status": "Aurora Agent AI Server is running. Visit /docs to test endpoints."}
+    return {"status": "Autoforge AI Server is running. Visit /docs to test endpoints."}
 
 
 @app.get("/api/status")
 def get_system_status():
     """
-    Returns system status, configured providers, and workspace summary for Aurora Agent AI.
+    Returns system status, configured providers, and workspace summary for Autoforge AI.
     """
     providers = ProviderFactory.get_provider_status()
     tavily_configured = bool(os.getenv("TAVILY_API_KEY"))
@@ -65,7 +65,7 @@ def get_system_status():
     projects = _scan_generated_artifacts()
 
     return {
-        "system": "Aurora Agent AI",
+        "system": "Autoforge AI",
         "edition": "Personal Edition — Washifur",
         "version": "2.0.0",
         "status": "operational",
@@ -109,10 +109,10 @@ def download_artifact(path: str):
 @app.post("/api/generate")
 def generate_project(req: GenerateRequest):
     """
-    Takes a text prompt and runs the full Aurora Agent AI multi-agent pipeline
+    Takes a text prompt and runs the full Autoforge AI multi-agent pipeline
     (Task Analysis -> Architecture Planning -> Multi-Provider Execution -> Validation & Self-Repair / PDF Export).
     """
-    print(f"\n[AURORA AGENT AI] Received generation prompt: {req.prompt}\n")
+    print(f"\n[AUTOFORGE AI] Received generation prompt: {req.prompt}\n")
 
     try:
         started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -127,7 +127,7 @@ def generate_project(req: GenerateRequest):
 
         return {
             "status": "success",
-            "message": "Aurora Agent AI pipeline execution completed.",
+            "message": "Autoforge AI pipeline execution completed.",
             "data": result
         }
     except Exception as e:
@@ -162,7 +162,7 @@ def chat_endpoint(req: ChatRequest):
     """
     Fast, conversational endpoint that maintains session history and falls back gracefully.
     """
-    print(f"\n[AURORA CHAT] Session: {req.session_id} | Prompt: {req.prompt}\n")
+    print(f"\n[AUTOFORGE CHAT] Session: {req.session_id} | Prompt: {req.prompt}\n")
 
     try:
         if req.session_id not in chat_sessions:
@@ -170,7 +170,7 @@ def chat_endpoint(req: ChatRequest):
                 {
                     "role": "system",
                     "content": (
-                        "You are Aurora Agent AI, a refined, articulate personal AI software architect "
+                        "You are Autoforge AI, a refined, articulate personal AI software architect "
                         "and research assistant created for Washifur. Provide clear, structured, "
                         "and technically rigorous responses."
                     )
@@ -203,7 +203,7 @@ def chat_endpoint(req: ChatRequest):
             # Helpful fallback message when no API keys are configured in .env yet
             fallback_msg = (
                 f"[Notice: {result.get('output', 'Provider unavailable')}]\n\n"
-                "Aurora Agent AI is online and ready, but no external LLM API key was detected in `.env`. "
+                "Autoforge AI is online and ready, but no external LLM API key was detected in `.env`. "
                 "Add `OPENAI_API_KEY`, `GEMINI_API_KEY`, or `CLAUDE_API_KEY` to your `.env` file to enable live model completions."
             )
             return {

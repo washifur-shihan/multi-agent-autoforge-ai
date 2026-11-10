@@ -1,5 +1,5 @@
 // ==========================================================================
-// Aurora Agent AI — Workbench Client Controller
+// Autoforge AI — Workbench Client Controller
 // ==========================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const stopPreviewBtn = document.getElementById("stop-preview-btn");
     const previewStatusBox = document.getElementById("preview-status-box");
 
-    let currentSessionId = "aurora_" + Date.now();
+    let currentSessionId = "autoforge_" + Date.now();
     let timerInterval = null;
 
     // ----------------------------------------------------------------------
@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             appendChatMessage(
                 "assistant",
-                `Aurora Agent AI · ${usedProvider.toUpperCase()}`,
+                `Autoforge AI · ${usedProvider.toUpperCase()}`,
                 reply
             );
         } catch (err) {
@@ -320,10 +320,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     resetChatBtn.addEventListener("click", () => {
-        currentSessionId = "aurora_" + Date.now();
+        currentSessionId = "autoforge_" + Date.now();
         chatTranscript.innerHTML = `
             <div class="chat-message assistant-message">
-                <div class="message-meta">Aurora Agent AI &middot; New Session Initialized</div>
+                <div class="message-meta">Autoforge AI &middot; New Session Initialized</div>
                 <div class="message-body">Session history cleared. Ready for new architectural consultation.</div>
             </div>
         `;
@@ -356,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 archiveTableWrapper.innerHTML = `
                     <div class="empty-state">
                         <h3>No Generated Deliverables Yet</h3>
-                        <p>Projects, ZIP archives, and PDF reports created by Aurora Agent AI will appear in this registry.</p>
+                        <p>Projects, ZIP archives, and PDF reports created by Autoforge AI will appear in this registry.</p>
                     </div>
                 `;
                 return;
@@ -498,3 +498,4 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initial load
     loadSystemStatus();
 });
+

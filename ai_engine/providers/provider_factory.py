@@ -6,7 +6,7 @@ from ai_engine.providers.nvidia_client import NvidiaClient
 
 class ProviderFactory:
     """
-    Factory class to return the correct AI provider instance for Aurora Agent AI.
+    Factory class to return the correct AI provider instance for Autoforge AI.
     Supports automatic fallback to any configured provider.
     """
 

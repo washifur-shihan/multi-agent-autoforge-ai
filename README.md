@@ -27,16 +27,16 @@ Autoforge AI is an autonomous multi-agent software engineering, architectural pl
 
 ## API Reference
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/` | Serves the Autoforge AI Web Workbench (Light Theme) |
-| `GET` | `/api/status` | Returns system health, configured AI providers, and workspace metrics |
-| `POST` | `/api/generate` | Runs the full autonomous multi-agent generation pipeline |
-| `POST` | `/api/chat` | Stateful conversational endpoint with multi-provider selection |
-| `GET` | `/api/projects` | Lists all generated projects, ZIP archives, and PDF reports |
-| `GET` | `/api/download?path=...` | Downloads a generated ZIP, PDF, or image artifact |
-| `POST` | `/api/preview` | Starts a local preview server for a generated project |
-| `POST` | `/api/preview/stop` | Stops an active project preview server |
+| Method | Endpoint                 | Description                                                           |
+| :----- | :----------------------- | :-------------------------------------------------------------------- |
+| `GET`  | `/`                      | Serves the Autoforge AI Web Workbench (Light Theme)                   |
+| `GET`  | `/api/status`            | Returns system health, configured AI providers, and workspace metrics |
+| `POST` | `/api/generate`          | Runs the full autonomous multi-agent generation pipeline              |
+| `POST` | `/api/chat`              | Stateful conversational endpoint with multi-provider selection        |
+| `GET`  | `/api/projects`          | Lists all generated projects, ZIP archives, and PDF reports           |
+| `GET`  | `/api/download?path=...` | Downloads a generated ZIP, PDF, or image artifact                     |
+| `POST` | `/api/preview`           | Starts a local preview server for a generated project                 |
+| `POST` | `/api/preview/stop`      | Stops an active project preview server                                |
 
 ---
 
@@ -46,6 +46,7 @@ Autoforge AI is an autonomous multi-agent software engineering, architectural pl
    Open `.env` in the project root and add one or more provider keys (`OPENAI_API_KEY`, `GEMINI_API_KEY`, `CLAUDE_API_KEY`, `TAVILY_API_KEY`).
 
 2. **Install Dependencies:**
+
    ```bash
    pip install -r requirements.txt
    ```

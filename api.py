@@ -1,9 +1,10 @@
 import os
+import httpx
 from pathlib import Path
 from datetime import datetime
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse
 from pydantic import BaseModel
 from ai_engine.core.ai_engine import AIEngine
 from ai_engine.preview.preview_agent import PreviewAgent
@@ -144,6 +145,76 @@ def preview_project(req: PreviewRequest):
 @app.post("/api/preview/stop")
 def stop_preview_project(req: PreviewRequest):
     return preview_agent.stop_preview(req.project_path)
+
+
+@app.get("/preview/{project_name}")
+def redirect_preview_root(project_name: str):
+    return RedirectResponse(url=f"/preview/{project_name}/")
+
+
+@app.api_route("/preview/{project_name}/{subpath:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
+async def proxy_preview_request(project_name: str, subpath: str, request: Request):
+    """
+    Reverse-proxies preview requests through the main FastAPI server port so
+    previews work seamlessly on Render and cloud hosts (which only expose one port).
+    Also supports direct static file serving if no subprocess is needed.
+    """
+    project_dir = (Path("generated_projects") / project_name).resolve()
+    base_dir = Path("generated_projects").resolve()
+
+    if not str(project_dir).startswith(str(base_dir)) or not project_dir.exists():
+        raise HTTPException(status_code=404, detail=f"Project '{project_name}' not found.")
+
+    # Ensure preview server is started if not already active
+    active_info = preview_agent.active_processes.get(str(project_dir))
+    if not active_info or active_info["process"].poll() is not None:
+        start_res = preview_agent.start_preview(str(project_dir))
+        active_info = preview_agent.active_processes.get(str(project_dir))
+        if not active_info:
+            # Fallback: serve static HTML/CSS/JS files directly from project_dir or project_dir/public
+            return _serve_static_fallback(project_dir, subpath)
+
+    port = active_info["port"]
+    target_url = f"http://127.0.0.1:{port}/{subpath}"
+    if request.url.query:
+        target_url += f"?{request.url.query}"
+
+    try:
+        body = await request.body()
+        headers = {
+            k: v for k, v in request.headers.items()
+            if k.lower() not in ("host", "content-length")
+        }
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.request(
+                method=request.method,
+                url=target_url,
+                headers=headers,
+                content=body,
+            )
+
+        excluded_headers = {"content-encoding", "transfer-encoding", "content-length", "connection"}
+        response_headers = {
+            k: v for k, v in resp.headers.items()
+            if k.lower() not in excluded_headers
+        }
+        return Response(
+            content=resp.content,
+            status_code=resp.status_code,
+            headers=response_headers,
+            media_type=resp.headers.get("content-type"),
+        )
+    except Exception:
+        return _serve_static_fallback(project_dir, subpath)
+
+
+def _serve_static_fallback(project_dir: Path, subpath: str):
+    rel = subpath.strip("/") or "index.html"
+    for candidate_root in (project_dir, project_dir / "public", project_dir / "frontend", project_dir / "src"):
+        candidate = (candidate_root / rel).resolve()
+        if str(candidate).startswith(str(project_dir)) and candidate.exists() and candidate.is_file():
+            return FileResponse(str(candidate))
+    raise HTTPException(status_code=404, detail=f"Preview resource '{rel}' not found.")
 
 
 @app.get("/api/debug-path")

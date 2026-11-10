@@ -189,6 +189,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const links = [];
             if (projectPath) {
                 links.push(`<span>Project Directory: <code>${escapeHtml(projectPath)}</code></span>`);
+                links.push(
+                    `<button type="button" class="btn btn-secondary btn-sm inline-preview-btn" data-path="${escapeHtml(
+                        projectPath
+                    )}">Live Preview</button>`
+                );
                 previewPathInput.value = projectPath;
             }
             if (zipPath) {
@@ -274,6 +279,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${tasksHtml}
             </div>
         `;
+
+        pipelineResults
+            .querySelectorAll(".inline-preview-btn")
+            .forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    previewPathInput.value = btn.dataset.path;
+                    startPreview(btn.dataset.path);
+                });
+            });
     }
 
     // ----------------------------------------------------------------------
@@ -472,13 +486,14 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             const data = await res.json();
             if (data.success && data.url) {
+                const fullUrl = data.url.startsWith("http")
+                    ? data.url
+                    : `${window.location.origin}${data.url}`;
                 previewStatusBox.innerHTML = `Running (${escapeHtml(
                     data.project_type
                 )}): <a href="${escapeHtml(
-                    data.url
-                )}" target="_blank" rel="noopener"><strong>${escapeHtml(
-                    data.url
-                )}</strong></a>`;
+                    fullUrl
+                )}" target="_blank" rel="noopener"><strong>Open Live Preview &rarr;</strong></a>`;
             } else {
                 previewStatusBox.textContent =
                     data.error || "Could not start preview server.";

@@ -165,8 +165,9 @@ class PreviewAgent:
                 if "node_modules" in client_js.parts:
                     continue
                 content = client_js.read_text(encoding="utf-8")
-                # Replace hardcoded http://localhost:3000/api with relative /api
-                updated = re.sub(r"https?://(?:localhost|127\.0\.0\.1):\d+(/api\b)", r"\1", content)
+                # Replace hardcoded http://localhost:3000/api or '/api/...' with relative 'api/...'
+                updated = re.sub(r"https?://(?:localhost|127\.0\.0\.1):\d+/api\b", "api", content)
+                updated = re.sub(r"(['\"])/api/", r"\1api/", updated)
                 if updated != content:
                     client_js.write_text(updated, encoding="utf-8")
         except Exception as e:
@@ -288,12 +289,15 @@ class PreviewAgent:
                     "script_used": script_used
                 }
 
-            preview_url = f"http://127.0.0.1:{port}"
+            project_name = project_path.name
+            preview_url = f"/preview/{project_name}/"
 
             self.active_processes[str(project_path)] = {
                 "process": process,
                 "port": port,
                 "url": preview_url,
+                "local_url": f"http://127.0.0.1:{port}",
+                "project_name": project_name,
                 "project_type": project_type,
                 "script_used": script_used
             }
@@ -301,7 +305,9 @@ class PreviewAgent:
             return {
                 "success": True,
                 "url": preview_url,
+                "local_url": f"http://127.0.0.1:{port}",
                 "port": port,
+                "project_name": project_name,
                 "project_type": project_type,
                 "script_used": script_used
             }

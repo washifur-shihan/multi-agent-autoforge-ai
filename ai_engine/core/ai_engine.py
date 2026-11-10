@@ -197,54 +197,10 @@ class AIEngine:
 
         prompt = builder.build_context(prompt, pdf_context)
 
-        print("\n--- AGENT REASONING LOOP ---\n")
-
-        agent_result = self.reasoning_loop.run(prompt)
-
-        plan = self.tool_planner.create_plan(prompt)
-
-        print("Generated Plan:")
-        print(plan)
-
-        for step in plan:
-
-            tool_name = step.get("tool")
-
-            tool = self.tools.get_tool(tool_name)
-
-            if not tool:
-                continue
-
-            print(f"\nExecuting tool: {tool_name}")
-
-            if tool_name == "web_search":
-                result = tool.search(prompt)
-
-            elif tool_name == "python":
-                result = tool.execute("print('planner execution')")
-
-            else:
-                result = "unknown tool"
-
-            print("Tool result:", result)
-
-        print("Agent reasoning result:")
-        print(agent_result)
-
-
-
+        # Skip legacy debug ReasoningLoop/ToolPlanner calls that burn 6 extra LLM calls
+        # before the main TaskAnalyzer -> ArchitecturePlanner -> ExecutionManager pipeline.
         print("\n--- AVAILABLE TOOLS ---\n")
-
         print(self.tools.list_tools())
-
-        print("\n--- TOOL TEST ---")
-
-        result = self.tool_executor.execute_tool(
-            "web_search",
-            "AI impact on software development"
-        )
-
-        print(result)
 
         print("\n--- STEP 0.5: WEB RESEARCH ---\n")
 

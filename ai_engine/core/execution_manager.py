@@ -29,24 +29,14 @@ class ExecutionManager:
             structured_prompt = self.prompt_builder.build_prompt(task, architecture)
             final_prompt = base_prompt + "\n" + structured_prompt
 
-            try:
-                provider = ProviderFactory.get_provider(provider_name)
+            # ProviderFactory.get_provider() returns a ResilientProviderProxy that
+            # already cascades across all configured providers (mistral, grok, openai, gemini, claude, nvidia).
+            provider = ProviderFactory.get_provider(provider_name)
+
+            if task_type == "image_generation":
+                response = provider.generate_image(intent)
+            else:
                 response = provider.generate_response(final_prompt)
-
-                if response.get("status") == "error":
-                    print(f"[{provider_name.upper()} ERROR] {response.get('output')} - Attempting Fallback...")
-                    raise Exception(response.get("output") or "Provider returned error status.")
-
-            except Exception as e:
-                if task_type == "image_generation":
-                    response = {
-                        "provider": "gemini",
-                        "status": "error",
-                        "output": f"Gemini image generation failed: {e}",
-                        "tokens_used": None
-                    }
-                else:
-                    response = self._attempt_fallbacks(provider_name, final_prompt, e)
 
             results.append({
                 "task_type": task_type,
@@ -56,30 +46,4 @@ class ExecutionManager:
 
         return {
             "results": results
-        }
-
-    def _attempt_fallbacks(self, failed_provider: str, final_prompt: str, primary_error: Exception):
-        fallback_order = ["mistral", "grok", "openai", "gemini", "claude", "nvidia"]
-        last_error = str(primary_error)
-
-        for alt_name in fallback_order:
-            if alt_name == failed_provider:
-                continue
-            try:
-                alt_provider = ProviderFactory.get_provider(alt_name)
-                if not getattr(alt_provider, "is_configured", False):
-                    continue
-                print(f"[EXECUTION FALLBACK] Trying configured provider: {alt_name}")
-                resp = alt_provider.generate_response(final_prompt)
-                if resp.get("status") == "success":
-                    return resp
-                last_error = resp.get("output", last_error)
-            except Exception as fallback_e:
-                last_error = str(fallback_e)
-
-        return {
-            "provider": failed_provider,
-            "status": "error",
-            "output": f"No configured AI provider succeeded. Details: {last_error}",
-            "tokens_used": None
         }

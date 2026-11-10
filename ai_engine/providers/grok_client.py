@@ -8,9 +8,10 @@ load_dotenv()
 
 class GrokClient(BaseProvider):
     """
-    Grok (xAI) provider implementation for Autoforge AI.
-    Supports xAI API (https://api.x.ai/v1/chat/completions) via GROK_API_KEY or XAI_API_KEY,
-    and also auto-detects Groq keys (gsk_...) if GROQ_API_KEY is used.
+    Grok (xAI) & Groq Cloud provider implementation for Autoforge AI.
+    Supports both:
+      - Groq Cloud (https://api.groq.com/openai/v1/chat/completions) for keys starting with 'gsk_'
+      - xAI Grok (https://api.x.ai/v1/chat/completions) for xAI keys
     """
 
     def __init__(self):
@@ -24,8 +25,16 @@ class GrokClient(BaseProvider):
             (self.api_key and self.api_key.strip().startswith("gsk_"))
             or (not os.getenv("GROK_API_KEY") and not os.getenv("XAI_API_KEY") and os.getenv("GROQ_API_KEY"))
         )
-        default_model = "llama-3.3-70b-versatile" if self._is_groq_cloud else "grok-2-latest"
-        self.model = os.getenv("GROK_MODEL", default_model)
+        env_model = (os.getenv("GROK_MODEL") or "").strip()
+
+        # If a Groq Cloud key (gsk_) is used, ensure we don't send an xAI-only model name like grok-2-latest
+        if self._is_groq_cloud:
+            if not env_model or env_model.startswith("grok"):
+                self.model = "llama-3.3-70b-versatile"
+            else:
+                self.model = env_model
+        else:
+            self.model = env_model or "grok-2-latest"
 
     @property
     def is_configured(self) -> bool:
@@ -41,7 +50,7 @@ class GrokClient(BaseProvider):
             return {
                 "provider": "grok",
                 "status": "error",
-                "output": "GROK_API_KEY (or XAI_API_KEY) is not configured in environment variables (.env).",
+                "output": "GROK_API_KEY (or GROQ_API_KEY) is not configured in environment variables (.env).",
                 "tokens_used": None,
             }
 
@@ -60,7 +69,7 @@ class GrokClient(BaseProvider):
                     {
                         "role": "system",
                         "content": (
-                            "You are Autoforge AI (powered by Grok), "
+                            "You are Autoforge AI, "
                             "an autonomous software engineering, coding, and research assistant."
                         ),
                     },
@@ -104,7 +113,7 @@ class GrokClient(BaseProvider):
             return {
                 "provider": "grok",
                 "status": "error",
-                "output": "GROK_API_KEY (or XAI_API_KEY) is not configured in environment variables (.env).",
+                "output": "GROK_API_KEY (or GROQ_API_KEY) is not configured in environment variables (.env).",
                 "tokens_used": None,
             }
 
@@ -152,4 +161,3 @@ class GrokClient(BaseProvider):
                 "output": str(e),
                 "tokens_used": None,
             }
-

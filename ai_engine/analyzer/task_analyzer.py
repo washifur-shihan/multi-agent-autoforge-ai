@@ -71,26 +71,31 @@ Example output:
         return response
 
     def _heuristic_analyze(self, prompt: str):
-        text = prompt.lower()
+        # Extract only the user request portion if system instructions were prepended
+        raw_user_text = prompt
+        if "USER REQUEST:" in prompt:
+            raw_user_text = prompt.split("USER REQUEST:")[-1].strip()
+
+        text = raw_user_text.lower()
         tasks = []
         priority = 1
 
-        if any(w in text for w in ["website", "landing page", "frontend", "html", "react", "web app", "flask", "fastapi"]):
-            tasks.append({"task_type": "website", "intent": prompt.strip(), "priority": priority})
+        if any(w in text for w in ["website", "portfolio", "landing page", "frontend", "html", "react", "web app", "flask", "fastapi"]):
+            tasks.append({"task_type": "website", "intent": raw_user_text, "priority": priority})
             priority += 1
         elif any(w in text for w in ["python script", "automation", "scrape", "monitor", "convert csv", "script"]):
-            tasks.append({"task_type": "automation", "intent": prompt.strip(), "priority": priority})
+            tasks.append({"task_type": "automation", "intent": raw_user_text, "priority": priority})
             priority += 1
 
         if any(w in text for w in ["slides", "presentation", "pitch deck"]):
-            tasks.append({"task_type": "slides", "intent": prompt.strip(), "priority": priority})
+            tasks.append({"task_type": "slides", "intent": raw_user_text, "priority": priority})
             priority += 1
 
         if any(w in text for w in ["research", "report", "impact of", "pdf", "analyze"]):
-            tasks.append({"task_type": "research", "intent": prompt.strip(), "priority": priority})
+            tasks.append({"task_type": "research", "intent": raw_user_text, "priority": priority})
             priority += 1
 
         if not tasks:
-            tasks.append({"task_type": "conversation", "intent": prompt.strip(), "priority": 1})
+            tasks.append({"task_type": "conversation", "intent": raw_user_text, "priority": 1})
 
         return tasks

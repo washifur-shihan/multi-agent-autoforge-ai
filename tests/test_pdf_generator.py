@@ -6,9 +6,9 @@ def test_pdf():
     generator = PDFGenerator()
 
     text = """
-Kenneth AI Report
+Aurora Agent AI Report
 
-This PDF was generated automatically.
+This PDF was generated automatically by Aurora Agent AI.
 
 The system can export reports,
 analysis, or documentation.

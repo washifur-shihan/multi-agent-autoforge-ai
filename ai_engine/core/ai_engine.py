@@ -364,7 +364,7 @@ class AIEngine:
                 builder = ReportBuilderV2()
                 
                 report_text = builder.build_report(
-                    "AI Generated Report",
+                    "Aurora Agent AI — Executive Research Report",
                     research_output
                 )
 

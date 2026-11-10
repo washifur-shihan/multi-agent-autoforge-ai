@@ -1,10 +1,12 @@
 from ai_engine.providers.provider_factory import ProviderFactory
+import json
 
 
 class TaskAnalyzer:
     """
-    Task Analyzer uses AI to analyze user prompts
-    and detect one or multiple tasks.
+    Task Analyzer for Aurora Agent AI.
+    Uses configured LLM provider to analyze user prompts and detect one or multiple tasks,
+    with deterministic keyword-based heuristic fallback when no LLM provider is configured.
     """
 
     def __init__(self):
@@ -14,9 +16,8 @@ class TaskAnalyzer:
         """
         Analyze the user prompt and return detected tasks.
         """
-
         analyzer_prompt = f"""
-You are an AI task analyzer.
+You are an AI task analyzer for Aurora Agent AI.
 
 Your job is to analyze user prompts and identify tasks.
 
@@ -28,6 +29,7 @@ Supported task types:
 - research
 - design
 - automation
+- image_generation
 
 Rules:
 1. Detect if the prompt contains multiple tasks.
@@ -53,6 +55,42 @@ Example output:
 }}
 """
 
+        # Refresh provider via factory so it uses whichever key is configured
+        self.provider = ProviderFactory.get_provider("openai")
         response = self.provider.generate_response(analyzer_prompt)
 
+        if response.get("status") != "success":
+            fallback_tasks = self._heuristic_analyze(user_prompt)
+            return {
+                "provider": "heuristic",
+                "status": "success",
+                "output": json.dumps({"tasks": fallback_tasks}),
+                "tokens_used": 0,
+            }
+
         return response
+
+    def _heuristic_analyze(self, prompt: str):
+        text = prompt.lower()
+        tasks = []
+        priority = 1
+
+        if any(w in text for w in ["website", "landing page", "frontend", "html", "react", "web app", "flask", "fastapi"]):
+            tasks.append({"task_type": "website", "intent": prompt.strip(), "priority": priority})
+            priority += 1
+        elif any(w in text for w in ["python script", "automation", "scrape", "monitor", "convert csv", "script"]):
+            tasks.append({"task_type": "automation", "intent": prompt.strip(), "priority": priority})
+            priority += 1
+
+        if any(w in text for w in ["slides", "presentation", "pitch deck"]):
+            tasks.append({"task_type": "slides", "intent": prompt.strip(), "priority": priority})
+            priority += 1
+
+        if any(w in text for w in ["research", "report", "impact of", "pdf", "analyze"]):
+            tasks.append({"task_type": "research", "intent": prompt.strip(), "priority": priority})
+            priority += 1
+
+        if not tasks:
+            tasks.append({"task_type": "conversation", "intent": prompt.strip(), "priority": 1})
+
+        return tasks

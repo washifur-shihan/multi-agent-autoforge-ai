@@ -152,3 +152,4 @@ class GrokClient(BaseProvider):
                 "output": str(e),
                 "tokens_used": None,
             }
+

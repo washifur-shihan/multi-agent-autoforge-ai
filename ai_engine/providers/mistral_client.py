@@ -139,3 +139,4 @@ class MistralClient(BaseProvider):
                 "output": str(e),
                 "tokens_used": None,
             }
+

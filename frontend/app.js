@@ -84,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const providers = data.providers || {};
             const rows = [
                 { label: "Mistral Vibe AI", ok: providers.mistral },
+                { label: "Grok (xAI)", ok: providers.grok },
                 { label: "OpenAI GPT", ok: providers.openai },
                 { label: "Google Gemini", ok: providers.gemini },
                 { label: "Anthropic Claude", ok: providers.claude },

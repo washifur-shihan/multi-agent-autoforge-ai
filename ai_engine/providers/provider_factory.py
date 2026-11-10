@@ -4,6 +4,7 @@ from ai_engine.providers.claude_client import ClaudeClient
 from ai_engine.providers.gemini_client import GeminiClient
 from ai_engine.providers.nvidia_client import NvidiaClient
 from ai_engine.providers.mistral_client import MistralClient
+from ai_engine.providers.grok_client import GrokClient
 
 
 class ResilientProviderProxy(BaseProvider):
@@ -116,18 +117,23 @@ class ProviderFactory:
         "openai": OpenAIProvider,
         "mistral": MistralClient,
         "mistral_vibe": MistralClient,
+        "grok": GrokClient,
+        "groq": GrokClient,
+        "xai": GrokClient,
         "gemini": GeminiClient,
         "claude": ClaudeClient,
         "nvidia": NvidiaClient,
     }
 
-    PROVIDER_ORDER = ["mistral", "openai", "gemini", "claude", "nvidia"]
+    PROVIDER_ORDER = ["mistral", "grok", "openai", "gemini", "claude", "nvidia"]
 
     @staticmethod
     def get_provider(provider_name: str = "openai"):
         provider_name = (provider_name or "openai").lower().strip()
         if provider_name == "mistral_vibe":
             provider_name = "mistral"
+        elif provider_name in ("groq", "xai"):
+            provider_name = "grok"
 
         if provider_name not in ProviderFactory.PROVIDERS:
             raise ValueError(f"Unsupported provider: {provider_name}")
@@ -144,6 +150,7 @@ class ProviderFactory:
         for name, cls in [
             ("openai", OpenAIProvider),
             ("mistral", MistralClient),
+            ("grok", GrokClient),
             ("gemini", GeminiClient),
             ("claude", ClaudeClient),
             ("nvidia", NvidiaClient),

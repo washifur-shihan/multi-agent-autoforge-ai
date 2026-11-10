@@ -383,9 +383,9 @@ class AIEngine:
             print(f"\n--- RUNTIME TEST ATTEMPT {attempt+1} ---\n")
             print(runtime_result)
 
-            if runtime_result["status"] == "success":
+            if runtime_result["status"] in ("success", "no_entry_point"):
 
-                print("\n--- RUNTIME SUCCESS ---\n")
+                print("\n--- RUNTIME SUCCESS / NON-PYTHON PROJECT ---\n")
                 break
 
             print("\n--- RUNTIME ERROR DETECTED ---\n")

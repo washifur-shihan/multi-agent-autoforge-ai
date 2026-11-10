@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -133,6 +134,44 @@ class PreviewAgent:
 
         return None
 
+    def sanitize_node_project_paths(self, project_path: Path):
+        """
+        Automatically fixes common LLM path mismatches in generated Node/Express projects:
+        1. Root server.js requiring './routes/...' when files are in './server/routes/...'
+        2. Root server.js using '../public' instead of 'public'
+        3. Client JS hardcoding 'http://localhost:3000/api/...' instead of relative '/api/...'
+        """
+        try:
+            for js_file in project_path.glob("*.js"):
+                content = js_file.read_text(encoding="utf-8")
+                updated = content
+
+                if (project_path / "server" / "routes").exists() and not (project_path / "routes").exists():
+                    updated = updated.replace("require('./routes/", "require('./server/routes/")
+                    updated = updated.replace('require("./routes/', 'require("./server/routes/')
+
+                if (project_path / "server" / "models").exists() and not (project_path / "models").exists():
+                    updated = updated.replace("require('./models/", "require('./server/models/")
+                    updated = updated.replace('require("./models/', 'require("./server/models/')
+
+                if (project_path / "public").exists():
+                    updated = updated.replace("'../public'", "'public'")
+                    updated = updated.replace('"../public"', '"public"')
+
+                if updated != content:
+                    js_file.write_text(updated, encoding="utf-8")
+
+            for client_js in project_path.rglob("*.js"):
+                if "node_modules" in client_js.parts:
+                    continue
+                content = client_js.read_text(encoding="utf-8")
+                # Replace hardcoded http://localhost:3000/api with relative /api
+                updated = re.sub(r"https?://(?:localhost|127\.0\.0\.1):\d+(/api\b)", r"\1", content)
+                if updated != content:
+                    client_js.write_text(updated, encoding="utf-8")
+        except Exception as e:
+            print(f"[PreviewAgent] Path sanitization warning: {e}")
+
     def start_preview(self, project_path):
         try:
             project_path = Path(project_path).resolve()
@@ -142,6 +181,8 @@ class PreviewAgent:
                     "success": False,
                     "error": "Project path does not exist"
                 }
+
+            self.sanitize_node_project_paths(project_path)
 
             env = os.environ.copy()
             port = self.get_free_port()

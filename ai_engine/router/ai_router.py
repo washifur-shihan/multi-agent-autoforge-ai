@@ -92,18 +92,6 @@ class AIRouter:
         return {"tasks": []}
 
     def _select_provider(self, task_type):
-        task_type = str(task_type).lower().strip()
-
-        if task_type in ["website", "web_app", "frontend", "html_css", "app"]:
-            return "claude"
-
-        if task_type in ["research", "slides", "image_generation"]:
-            return "gemini"
-
-        if task_type in ["python", "automation", "script"]:
-            return "mistral"
-
-        if task_type in ["chat", "design", "conversation"]:
-            return "openai"
-
-        return "mistral"
+        # Gemini is set as the first-priority primary provider across all tasks,
+        # with automatic failover to Grok, Mistral, OpenAI, Claude, and NVIDIA if needed.
+        return "gemini"

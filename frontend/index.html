@@ -148,10 +148,10 @@
                         <div class="chat-controls">
                             <label for="chat-provider-select" class="control-label">Provider:</label>
                             <select id="chat-provider-select" class="select-input">
+                                <option value="gemini">Google Gemini (Primary)</option>
+                                <option value="grok">Grok / Groq</option>
                                 <option value="mistral">Mistral Vibe AI</option>
-                                <option value="grok">Grok (xAI)</option>
                                 <option value="openai">OpenAI GPT</option>
-                                <option value="gemini">Google Gemini</option>
                                 <option value="claude">Anthropic Claude</option>
                                 <option value="nvidia">NVIDIA NIM</option>
                             </select>
@@ -206,19 +206,19 @@
                 <p class="section-note">Configured credentials in environment (<code>.env</code>):</p>
                 <ul id="provider-status-list" class="telemetry-list">
                     <li class="telemetry-row">
+                        <span>Google Gemini</span>
+                        <span class="badge">Checking&hellip;</span>
+                    </li>
+                    <li class="telemetry-row">
+                        <span>Grok / Groq</span>
+                        <span class="badge">Checking&hellip;</span>
+                    </li>
+                    <li class="telemetry-row">
                         <span>Mistral Vibe AI</span>
                         <span class="badge">Checking&hellip;</span>
                     </li>
                     <li class="telemetry-row">
-                        <span>Grok (xAI)</span>
-                        <span class="badge">Checking&hellip;</span>
-                    </li>
-                    <li class="telemetry-row">
                         <span>OpenAI GPT</span>
-                        <span class="badge">Checking&hellip;</span>
-                    </li>
-                    <li class="telemetry-row">
-                        <span>Google Gemini</span>
                         <span class="badge">Checking&hellip;</span>
                     </li>
                     <li class="telemetry-row">

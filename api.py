@@ -39,7 +39,7 @@ class GenerateRequest(BaseModel):
 class ChatRequest(BaseModel):
     prompt: str
     session_id: str = "default"
-    provider: str = "openai"
+    provider: str = "gemini"
 
 
 class PreviewRequest(BaseModel):
@@ -179,7 +179,7 @@ def chat_endpoint(req: ChatRequest):
 
         chat_sessions[req.session_id].append({"role": "user", "content": req.prompt})
 
-        chat_provider = ProviderFactory.get_provider(req.provider or "openai")
+        chat_provider = ProviderFactory.get_provider(req.provider or "gemini")
 
         if hasattr(chat_provider, "generate_chat_response"):
             result = chat_provider.generate_chat_response(chat_sessions[req.session_id])

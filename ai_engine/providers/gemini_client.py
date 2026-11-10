@@ -13,19 +13,19 @@ from google import genai
 from google.genai import types
 
 
-load_dotenv()
+load_dotenv(override=True)
 
 
 class GeminiClient(BaseProvider):
     def __init__(self):
-        self.api_key = os.getenv("GEMINI_API_KEY")
+        load_dotenv(override=True)
+        self.api_key = (os.getenv("GEMINI_API_KEY") or "").strip()
         self.client = genai.Client(api_key=self.api_key) if self.api_key else None
 
-        self.text_model = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.5-flash")
-        self.image_model = os.getenv(
-            "GEMINI_IMAGE_MODEL",
-            "gemini-3.1-flash-image-preview"
-        )
+        self.text_model = (os.getenv("GEMINI_TEXT_MODEL") or "gemini-2.5-flash").strip()
+        self.image_model = (
+            os.getenv("GEMINI_IMAGE_MODEL") or "gemini-3.1-flash-image-preview"
+        ).strip()
 
     @property
     def is_configured(self) -> bool:

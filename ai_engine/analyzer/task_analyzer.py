@@ -10,7 +10,7 @@ class TaskAnalyzer:
     """
 
     def __init__(self):
-        self.provider = ProviderFactory.get_provider("openai")
+        self.provider = ProviderFactory.get_provider("gemini")
 
     def analyze(self, user_prompt: str):
         """
@@ -55,8 +55,8 @@ Example output:
 }}
 """
 
-        # Refresh provider via factory so it uses whichever key is configured
-        self.provider = ProviderFactory.get_provider("openai")
+        # Refresh provider via factory with Gemini as first priority
+        self.provider = ProviderFactory.get_provider("gemini")
         response = self.provider.generate_response(analyzer_prompt)
 
         if response.get("status") != "success":

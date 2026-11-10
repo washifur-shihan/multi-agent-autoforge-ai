@@ -83,10 +83,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const listEl = document.getElementById("provider-status-list");
             const providers = data.providers || {};
             const rows = [
-                { label: "Mistral Vibe AI", ok: providers.mistral },
-                { label: "Grok (xAI)", ok: providers.grok },
-                { label: "OpenAI GPT", ok: providers.openai },
                 { label: "Google Gemini", ok: providers.gemini },
+                { label: "Grok / Groq", ok: providers.grok },
+                { label: "Mistral Vibe AI", ok: providers.mistral },
+                { label: "OpenAI GPT", ok: providers.openai },
                 { label: "Anthropic Claude", ok: providers.claude },
                 { label: "NVIDIA NIM", ok: providers.nvidia },
                 { label: "Tavily Web Search", ok: data.web_search },

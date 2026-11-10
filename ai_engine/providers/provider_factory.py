@@ -125,11 +125,11 @@ class ProviderFactory:
         "nvidia": NvidiaClient,
     }
 
-    PROVIDER_ORDER = ["mistral", "grok", "openai", "gemini", "claude", "nvidia"]
+    PROVIDER_ORDER = ["gemini", "mistral", "grok", "openai", "claude", "nvidia"]
 
     @staticmethod
-    def get_provider(provider_name: str = "openai"):
-        provider_name = (provider_name or "openai").lower().strip()
+    def get_provider(provider_name: str = "gemini"):
+        provider_name = (provider_name or "gemini").lower().strip()
         if provider_name == "mistral_vibe":
             provider_name = "mistral"
         elif provider_name in ("groq", "xai"):
@@ -148,10 +148,10 @@ class ProviderFactory:
     def get_provider_status():
         status = {}
         for name, cls in [
-            ("openai", OpenAIProvider),
+            ("gemini", GeminiClient),
             ("mistral", MistralClient),
             ("grok", GrokClient),
-            ("gemini", GeminiClient),
+            ("openai", OpenAIProvider),
             ("claude", ClaudeClient),
             ("nvidia", NvidiaClient),
         ]:
